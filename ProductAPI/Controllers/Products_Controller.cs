@@ -39,7 +39,6 @@ namespace ProductAPI.Controllers
         [HttpGet("Id Keresés")]
         public ProductDTO GetById(Guid id) 
         {
-
             return ProductList.Find(x=>x.ID==id);
         }
 
@@ -55,10 +54,37 @@ namespace ProductAPI.Controllers
                 );
             ProductList.Add(created);
             return created;
-        
         }
 
+        [HttpPut("Edit")]
+        public ProductDTO EditProductById(Guid ID, UpdateProductDTO update)
+        { 
+            var megadott = ProductList.Find(x=>x.ID==ID);
+            var az = megadott with
+            {
+                Product_Name = update.Product_Name,
+                Product_Price = update.Product_Price,
+                Time_Modified = DateTimeOffset.UtcNow
+            };
 
+            ProductList[ProductList.FindIndex(x => x.ID == ID)] = az;
+            return az;
+        }
+
+        [HttpDelete("Törlés")]
+        public string DeleteById(Guid ID) 
+        {
+            var megadott = ProductList.Find(x => x.ID == ID);
+            if (ProductList.Contains(megadott))
+            {
+                ProductList.Remove(megadott);
+                return "Sikeres Törlés";
+            }
+            else
+            {
+                return "Nincs elem ezzel az ID-vel";
+            }
+        }
 
     }
 }
