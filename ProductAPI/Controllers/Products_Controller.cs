@@ -37,13 +37,18 @@ namespace ProductAPI.Controllers
         }
 
         [HttpGet("Id Keresés")]
-        public ProductDTO GetById(Guid id) 
+        public ActionResult<ProductDTO> GetById(Guid id) 
         {
-            return ProductList.Find(x=>x.ID==id);
+            var item = ProductList.Find(x => x.ID == id);
+            if (item == null)
+            {
+                return NotFound();
+            }
+            return Ok(item);
         }
 
         [HttpPost("Feltölt")]
-        public ProductDTO PostNewProduct(CreateProductDTO create_P)
+        public ActionResult<ProductDTO> PostNewProduct(CreateProductDTO create_P)
         {
             var created = new ProductDTO(
                 Guid.NewGuid(),
@@ -52,8 +57,9 @@ namespace ProductAPI.Controllers
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow
                 );
+           
             ProductList.Add(created);
-            return created;
+            return CreatedAtAction(nameof(GetById) , new {id=created.ID } , created);
         }
 
         [HttpPut("Edit")]
@@ -72,18 +78,15 @@ namespace ProductAPI.Controllers
         }
 
         [HttpDelete("Törlés")]
-        public string DeleteById(Guid ID) 
+        public ActionResult DeleteById(Guid ID) 
         {
             var megadott = ProductList.Find(x => x.ID == ID);
-            if (ProductList.Contains(megadott))
+            if (!ProductList.Contains(megadott))
             {
                 ProductList.Remove(megadott);
-                return "Sikeres Törlés";
+                return NoContent();
             }
-            else
-            {
-                return "Nincs elem ezzel az ID-vel";
-            }
+            return NotFound();
         }
 
     }

@@ -1,4 +1,6 @@
-﻿namespace ProductAPI
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ProductAPI
 {
     public class DTOS//Data Transfer Object
     {
@@ -11,13 +13,13 @@
             );
 
         public record CreateProductDTO(
-            string Product_Name,
-            int Product_Price
+            [Required]string Product_Name,
+            [Range(0 , 10000)] int Product_Price
             );
 
         public record UpdateProductDTO(
-            string Product_Name,
-            int Product_Price
+            [Required] string Product_Name,
+            [Range(0, 10000)] int Product_Price
             );
 
     }
